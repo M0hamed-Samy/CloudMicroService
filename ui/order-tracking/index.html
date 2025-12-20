@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Order Tracking</title>
+</head>
+<body>
+  <h2>Order Tracking Dashboard</h2>
+
+  <input type="text" id="orderId" placeholder="Enter Order ID" />
+  <button onclick="trackOrder()">Track Order</button>
+
+  <pre id="result"></pre>
+
+  <script>
+    function trackOrder() {
+      const orderId = document.getElementById("orderId").value;
+
+      fetch("http://localhost:8002/orders/" + orderId)
+        .then(res => res.json())
+        .then(data => {
+          document.getElementById("result").innerText =
+            JSON.stringify(data, null, 2);
+        })
+        .catch(err => {
+          document.getElementById("result").innerText =
+            "Order not found";
+        });
+    }
+  </script>
+</body>
+</html>
+
