@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Order Tracking</title>
+</head>
+<body>
+<h2>Orders</h2>
+
+<button onclick="create()">Create Order</button>
+<ul id="orders"></ul>
+
+<script>
+const API = "http://localhost:8002/orders";
+
+function load() {
+  fetch(API)
+    .then(r => r.json())
+    .then(data => {
+      orders.innerHTML = "";
+      data.forEach(o => {
+        orders.innerHTML += `
+          <li>
+            ${o.id} → ${o.status}
+            <button onclick="update('${o.id}')">Mark PAID</button>
+            <button onclick="del('${o.id}')">❌</button>
+          </li>`;
+      });
+    });
+}
+
+function create() {
+  fetch(API, {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({ items: [] })
+  }).then(load);
+}
+
+function update(id) {
+  fetch(`${API}/${id}/status?status=PAID`, { method: "PUT" })
+    .then(load);
+}
+
+function del(id) {
+  fetch(`${API}/${id}`, { method: "DELETE" })
+    .then(load);
+}
+
+load();
+</script>
+</body>
+</html>
+

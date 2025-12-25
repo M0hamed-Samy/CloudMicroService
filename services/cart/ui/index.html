@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Cart Service</title>
+</head>
+<body>
+<h2>Cart</h2>
+
+<input id="pid" placeholder="Product ID">
+<input id="qty" type="number" placeholder="Quantity">
+<button onclick="add()">Add</button>
+
+<h3>Items</h3>
+<ul id="items"></ul>
+
+<script>
+const API = "http://localhost:8001/cart";
+
+function load() {
+  fetch(API)
+    .then(r => r.json())
+    .then(data => {
+      items.innerHTML = "";
+      data.forEach(i => {
+        items.innerHTML += `
+          <li>
+            ${i.product_id} → ${i.quantity}
+            <button onclick="del('${i.product_id}')">❌</button>
+          </li>`;
+      });
+    });
+}
+
+function add() {
+  fetch(API, {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({
+      product_id: pid.value,
+      quantity: Number(qty.value)
+    })
+  }).then(load);
+}
+
+function del(id) {
+  fetch(API + "/" + id, { method: "DELETE" })
+    .then(load);
+}
+
+load();
+</script>
+</body>
+</html>
+

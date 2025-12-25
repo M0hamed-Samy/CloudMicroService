@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Payment Service</title>
+</head>
+<body>
+<h2>Payments</h2>
+
+<input id="oid" placeholder="Order ID">
+<input id="amt" placeholder="Amount" type="number">
+<button onclick="pay()">Pay</button>
+
+<ul id="payments"></ul>
+
+<script>
+const API = "http://localhost:8003/payments";
+
+function load() {
+  fetch(API)
+    .then(r => r.json())
+    .then(data => {
+      payments.innerHTML = "";
+      data.forEach(p => {
+        payments.innerHTML += `
+          <li>
+            ${p.order_id} → $${p.amount} (${p.status})
+            <button onclick="del('${p.id}')">❌</button>
+          </li>`;
+      });
+    });
+}
+
+function pay() {
+  fetch(API, {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({
+      order_id: oid.value,
+      amount: Number(amt.value)
+    })
+  }).then(load);
+}
+
+function del(id) {
+  fetch(API + "/" + id, { method: "DELETE" })
+    .then(load);
+}
+
+load();
+</script>
+</body>
+</html>
